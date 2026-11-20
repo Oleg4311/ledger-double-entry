@@ -1,0 +1,201 @@
+openapi: 3.0.3
+info:
+  title: ledger-double-entry API
+  version: "0.1.0"
+  description: >
+    Журнал с двойной записью. Деньги — целые числа в минимальных единицах (копейки, центы).
+    Положительная проводка увеличивает остаток счёта, отрицательная уменьшает; сумма проводок транзакции
+    по каждой валюте равна нулю. Все операции проведения идемпотентны по заголовку Idempotency-Key.
+paths:
+  /healthz:
+    get:
+      summary: Проверка живости
+      responses:
+        "200":
+          description: сервис работает
+  /v1/accounts:
+    post:
+      summary: Открыть счёт
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, currency]
+              properties:
+                id: { type: string, pattern: "^[A-Za-z0-9:_.-]{1,64}$" }
+                currency: { type: string, pattern: "^[A-Z]{3}$" }
+                allow_negative: { type: boolean }
+      responses:
+        "201":
+          description: счёт открыт
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Account" }
+        "400": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+  /v1/accounts/{id}:
+    get:
+      summary: Счёт и его остаток
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: счёт
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Account" }
+        "404": { $ref: "#/components/responses/Error" }
+  /v1/accounts/{id}/entries:
+    get:
+      summary: Выписка по счёту, новые проводки первыми
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 1000 } }
+        - { name: before, in: query, description: "id проводки: вернуть более ранние", schema: { type: integer } }
+      responses:
+        "200":
+          description: проводки
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [entries]
+                properties:
+                  entries:
+                    type: array
+                    items: { $ref: "#/components/schemas/EntryRecord" }
+                  next_before: { type: integer }
+        "404": { $ref: "#/components/responses/Error" }
+  /v1/transfers:
+    post:
+      summary: Провести транзакцию
+      parameters:
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entries]
+              properties:
+                description: { type: string }
+                entries:
+                  type: array
+                  minItems: 2
+                  items:
+                    type: object
+                    required: [account, amount]
+                    properties:
+                      account: { type: string }
+                      amount: { type: integer, format: int64, description: "ненулевая; плюс — приход, минус — расход" }
+      responses:
+        "201":
+          description: проведена
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Posted" }
+        "200":
+          description: повтор с тем же ключом, ничего нового не проведено
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Posted" }
+        "400": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+        "422": { $ref: "#/components/responses/Error" }
+  /v1/transactions/{id}/reverse:
+    post:
+      summary: Сторнировать транзакцию
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description: { type: string }
+      responses:
+        "201":
+          description: сторно проведено
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Posted" }
+        "200":
+          description: повтор с тем же ключом
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Posted" }
+        "400": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+        "422": { $ref: "#/components/responses/Error" }
+  /v1/verify:
+    get:
+      summary: Сверка журнала с хранимыми остатками
+      responses:
+        "200":
+          description: результат сверки
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, problems]
+                properties:
+                  ok: { type: boolean }
+                  problems:
+                    type: array
+                    items:
+                      type: object
+                      required: [kind, detail]
+                      properties:
+                        kind: { type: string, enum: [balance-drift, unbalanced-transaction, running-balance] }
+                        detail: { type: string }
+components:
+  responses:
+    Error:
+      description: ошибка
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error:
+                type: object
+                required: [code, message]
+                properties:
+                  code:
+                    type: string
+                    enum: [invalid_request, unbalanced, currency_mismatch, unknown_account, unknown_transaction, account_exists, idempotency_conflict, already_reversed, insufficient_funds, internal]
+                  message: { type: string }
+  schemas:
+    Account:
+      type: object
+      required: [id, currency, allow_negative, balance, created_at]
+      properties:
+        id: { type: string }
+        currency: { type: string }
+        allow_negative: { type: boolean }
+        balance: { type: integer, format: int64 }
+        created_at: { type: string, format: date-time }
+    EntryRecord:
+      type: object
+      required: [id, tx_id, amount, balance_after, description, created_at]
+      properties:
+        id: { type: integer }
+        tx_id: { type: integer }
+        amount: { type: integer, format: int64 }
+        balance_after: { type: integer, format: int64 }
+        description: { type: string }
+        created_at: { type: string, format: date-time }
+    Posted:
+      type: object
+      required: [tx_id, replayed]
+      properties:
+        tx_id: { type: integer }
+        replayed: { type: boolean }

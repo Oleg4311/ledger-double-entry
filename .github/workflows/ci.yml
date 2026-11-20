@@ -1,0 +1,56 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  # Тесты идут на настоящем PostgreSQL трёх версий, с детектором гонок
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres: ["14", "16", "17"]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test -race -count=1 -cover ./...
+      - name: Модельный тест на 300 случайных сценариях (с детектором гонок)
+        run: go test -race -count=1 -run TestLedgerMatchesModel ./ledger/ -rapid.checks=300
+      - name: Сквозной прогон сервиса по HTTP
+        run: bash scripts/smoke.sh
+      - name: Бенчмарк на этом Postgres
+        run: go test -run xxx -bench Move -benchtime 5000x ./ledger/ | tee bench-${{ matrix.postgres }}.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: bench-pg${{ matrix.postgres }}
+          path: bench-${{ matrix.postgres }}.txt
+
+  # Тесты без Postgres в окружении тоже должны работать: поднимется встроенный (так проект пробуют без Docker)
+  embedded:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version-file: go.mod
+      - run: go test -count=1 ./...

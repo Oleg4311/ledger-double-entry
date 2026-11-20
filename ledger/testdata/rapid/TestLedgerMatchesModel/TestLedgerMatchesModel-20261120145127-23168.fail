@@ -1,0 +1,30 @@
+# 2026/11/20 14:51:27.341754 [TestLedgerMatchesModel] [rapid] draw action: "перевод на двоих"
+# 2026/11/20 14:51:27.341754 [TestLedgerMatchesModel] [rapid] draw from: "b"
+# 2026/11/20 14:51:27.341754 [TestLedgerMatchesModel] [rapid] draw to1: "bank"
+# 2026/11/20 14:51:27.341754 [TestLedgerMatchesModel] [rapid] draw to2: "a"
+# 2026/11/20 14:51:27.341754 [TestLedgerMatchesModel] [rapid] draw x: 1
+# 2026/11/20 14:51:27.341754 [TestLedgerMatchesModel] [rapid] draw y: 1
+# 2026/11/20 14:51:27.341754 [TestLedgerMatchesModel] [rapid] draw key: "k0"
+# 2026/11/20 14:51:27.341754 [TestLedgerMatchesModel] [rapid] draw desc: ""
+# 2026/11/20 14:51:27.349252 [TestLedgerMatchesModel] нехватка средств: получили <nil>
+# 
+v0.4.8#4751819522859027186
+0x1084210842108
+0x38e38e38e38e4
+0x2
+0x38e38e38e38e4
+0x2
+0x0
+0x0
+0x0
+0x1
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0

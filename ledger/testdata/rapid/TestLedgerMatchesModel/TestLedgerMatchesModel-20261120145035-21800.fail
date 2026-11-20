@@ -1,0 +1,52 @@
+# 2026/11/20 14:50:35.588874 [TestLedgerMatchesModel] [rapid] draw action: "перевод на двоих"
+# 2026/11/20 14:50:35.588874 [TestLedgerMatchesModel] [rapid] draw from: "bank"
+# 2026/11/20 14:50:35.588874 [TestLedgerMatchesModel] [rapid] draw to1: "c"
+# 2026/11/20 14:50:35.588874 [TestLedgerMatchesModel] [rapid] draw to2: "b"
+# 2026/11/20 14:50:35.588874 [TestLedgerMatchesModel] [rapid] draw x: 2
+# 2026/11/20 14:50:35.588874 [TestLedgerMatchesModel] [rapid] draw y: 149
+# 2026/11/20 14:50:35.588874 [TestLedgerMatchesModel] [rapid] draw key: "k0"
+# 2026/11/20 14:50:35.588874 [TestLedgerMatchesModel] [rapid] draw desc: ""
+# 2026/11/20 14:50:35.596013 [TestLedgerMatchesModel] [rapid] draw action: "сторно"
+# 2026/11/20 14:50:35.596013 [TestLedgerMatchesModel] [rapid] draw tx: 0
+# 2026/11/20 14:50:35.596013 [TestLedgerMatchesModel] [rapid] draw key: "r0"
+# 2026/11/20 14:50:35.599336 [TestLedgerMatchesModel] [rapid] draw action: "сторно"
+# 2026/11/20 14:50:35.599336 [TestLedgerMatchesModel] [rapid] draw tx: 0
+# 2026/11/20 14:50:35.599336 [TestLedgerMatchesModel] [rapid] draw key: "r1"
+# 2026/11/20 14:50:35.600408 [TestLedgerMatchesModel] повторное сторно: ledger: недостаточно средств
+# 
+v0.4.8#14306600834178362572
+0x1084210842108
+0x1b2b7c163a0343
+0x2
+0x3b168d18736d0
+0x0
+0x1526494d99f424
+0x3
+0xfbf55871158ed
+0x2
+0x137259fb027791
+0x65dec11866d2e
+0x1
+0x5efd1add7db48
+0x1974ac292f5251
+0x94
+0x18b687bf15fc4
+0x0
+0x11cffca93b5f83
+0x0
+0x173bf26a6588e0
+0x1f847bdc85ce2c
+0xffffffffffffffff
+0x132695117b988a
+0x3f66feffc586a
+0x0
+0x7a4e448acf99c
+0x0
+0x1d64f8c088d9cf
+0x158d5c0db10473
+0x3
+0xf9c8fbd23186a
+0x1e4297919e0315
+0x0
+0x26ec73be05c0
+0x1

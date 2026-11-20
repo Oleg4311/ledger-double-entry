@@ -1,0 +1,50 @@
+# 2026/11/20 14:49:41.118409 [TestLedgerMatchesModel] [rapid] draw action: "перевод"
+# 2026/11/20 14:49:41.118409 [TestLedgerMatchesModel] [rapid] draw from: "bank"
+# 2026/11/20 14:49:41.118409 [TestLedgerMatchesModel] [rapid] draw to: "a"
+# 2026/11/20 14:49:41.118409 [TestLedgerMatchesModel] [rapid] draw amount: 1
+# 2026/11/20 14:49:41.118409 [TestLedgerMatchesModel] [rapid] draw key: "k3"
+# 2026/11/20 14:49:41.118409 [TestLedgerMatchesModel] [rapid] draw desc: ""
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] [rapid] draw action: "перевод на двоих"
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] [rapid] draw from: "bank"
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] [rapid] draw to1: "b"
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] [rapid] draw to2: "c"
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] [rapid] draw x: 130
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] [rapid] draw y: 139
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] [rapid] draw key: "k3"
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] [rapid] draw desc: "оплата"
+# 2026/11/20 14:49:41.124101 [TestLedgerMatchesModel] конфликт ключа: получили <nil>
+# 
+v0.4.8#7855605040268727128
+0x1084210842108
+0x0
+0x1
+0x0
+0x0
+0x0
+0x1
+0x0
+0x0
+0x0
+0x38e38e38e38e4
+0x3
+0x0
+0x0
+0x1084210842108
+0x16f32873e7defb
+0x2
+0x18327b7aacdf98
+0x0
+0x132cd848ef1241
+0x2
+0x186b4178b72b15
+0x3
+0x10b565460ba50c
+0x16c4bb2c294551
+0x81
+0x51729ddd5739a
+0x13e58e1b49980e
+0x8a
+0x15d6c9bf8f9f82
+0x3
+0x18e5e6a09cbd29
+0x1
