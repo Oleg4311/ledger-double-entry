@@ -19,7 +19,7 @@ var testPool *pgxpool.Pool
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
-	pool, stop, err := pgtest.Start(ctx)
+	pool, stop, err := pgtest.Start(ctx, "ledger_test")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "не удалось подготовить Postgres:", err)
 		os.Exit(1)

@@ -10,11 +10,13 @@ import (
 	"path/filepath"
 
 	embedded "github.com/fergusstrange/embedded-postgres"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Start возвращает пул и функцию остановки.
-func Start(ctx context.Context) (*pgxpool.Pool, func(), error) {
+// Start возвращает пул и функцию остановки. schema — отдельная схема для пакета тестов: пакеты запускаются
+// параллельно и не должны трогать таблицы друг друга (все соединения пула получают search_path = schema).
+func Start(ctx context.Context, schema string) (*pgxpool.Pool, func(), error) {
 	url := os.Getenv("DATABASE_URL")
 	stop := func() {}
 	if url == "" {
@@ -41,6 +43,20 @@ func Start(ctx context.Context) (*pgxpool.Pool, func(), error) {
 		return nil, nil, err
 	}
 	cfg.MaxConns = 32
+	if schema != "" {
+		admin, err := pgxpool.NewWithConfig(ctx, cfg)
+		if err != nil {
+			stop()
+			return nil, nil, err
+		}
+		_, err = admin.Exec(ctx, "create schema if not exists "+pgx.Identifier{schema}.Sanitize())
+		admin.Close()
+		if err != nil {
+			stop()
+			return nil, nil, err
+		}
+		cfg.ConnConfig.RuntimeParams["search_path"] = schema
+	}
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
 		stop()
