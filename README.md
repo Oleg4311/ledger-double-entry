@@ -92,7 +92,15 @@ curl localhost:8080/v1/verify                    # сверка журнала
 
 ## Производительность
 
-`go test -bench Move` (переводы между 200 счетами, 12 параллельных клиентов; ноутбук разработчика, Windows, встроенный Postgres без тюнинга, база и клиенты на одной машине): **≈ 4 400 переводов/с**. Каждый перевод — одна транзакция БД с блокировкой счетов, двумя обновлениями остатков, двумя проводками и отложенной проверкой баланса. Это нижняя оценка для неотдельной БД, а не обещание: измерьте на своём железе.
+`go test -bench Move` (переводы между 200 счетами, 12 параллельных клиентов; ноутбук разработчика, Windows, встроенный Postgres без тюнинга, база и клиенты на одной машине): **≈ 4 400 переводов/с**. Каждый перевод — одна транзакция БД с блокировкой счетов, двумя обновлениями остатков, двумя проводками и отложенной проверкой баланса. Тот же бенчмарк на общих раннерах GitHub Actions (4 vCPU, база и клиенты на одной машине, один запуск, без усреднения):
+
+| PostgreSQL | переводов/с |
+|---|---|
+| 14 | ≈ 1 400 |
+| 16 | ≈ 1 550 |
+| 17 | ≈ 3 150 |
+
+Разброс между версиями — в основном шум общих раннеров, а не свойство версий Postgres. Это нижняя оценка для неотдельной БД, а не обещание: измерьте на своём железе. Цифры каждого запуска CI сохраняются в артефактах (`bench-pg*`).
 
 ## Честные ограничения
 
@@ -126,6 +134,6 @@ bash scripts/smoke.sh                      # сквозной прогон се�
 - **The database enforces the invariants**: a deferred constraint trigger rejects transactions whose entries do not sum to zero per currency; a `CHECK` prevents negative balances; triggers make history immutable; a composite foreign key ties each entry to its account's currency. A test bypasses the library with raw SQL to prove it.
 - **Idempotency keys** with a content fingerprint (same key + different content = `409`), **reversals** (once per transaction), accounts locked in id order so opposite transfers never deadlock.
 - **Verification**: a model-based property test (rapid) runs random operation sequences against the real ledger and an in-memory model and compares balances and error classes after every step; concurrency tests (40 duplicate requests post once; money is conserved under 16 concurrent workers); `Verify` reconciles balances from entries and catches tampering. CI runs `-race` on PostgreSQL 14/16/17.
-- ≈ 4,400 transfers/s locally (see "Производительность"); no auth in `ledgerd` — run it behind your gateway.
+- ≈ 4,400 transfers/s locally, 1,400–3,200 on shared CI runners (see "Производительность"); no auth in `ledgerd` — run it behind your gateway.
 
 MIT licensed. Built with Claude.
