@@ -29,7 +29,7 @@ func Start(ctx context.Context, schema string) (*pgxpool.Pool, func(), error) {
 			Version(embedded.V16). // версия закреплена: «последняя» бывает ещё недоступна для некоторых платформ
 			Port(uint32(port)).
 			RuntimePath(filepath.Join(base, fmt.Sprint(port))).
-			CachePath(filepath.Join(base, "cache")).
+			CachePath(filepath.Join(base, "cache-"+schema)). // свой кэш у каждого пакета: параллельная распаковка в общий каталог падает на Windows
 			Logger(nil))
 		if err := pg.Start(); err != nil {
 			return nil, nil, fmt.Errorf("встроенный postgres: %w", err)
