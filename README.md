@@ -121,7 +121,7 @@ go test -run xxx -bench Move -benchtime 5000x ./ledger/
 bash scripts/smoke.sh                      # сквозной прогон сервиса (нужен DATABASE_URL)
 ```
 
-Релизы (`v*`) собираются из тега и содержат контрольные суммы и подтверждение происхождения: `gh attestation verify ledgerd-v0.1.0-linux-amd64.tar.gz --repo Oleg4311/ledger-double-entry`.
+Релизы (`v*`) собираются из тега и содержат контрольные суммы и подтверждение происхождения: `gh attestation verify ledgerd-v0.1.1-linux-amd64.tar.gz --repo Oleg4311/ledger-double-entry`.
 
 Лицензия: MIT. Сделано с помощью Claude.
 
